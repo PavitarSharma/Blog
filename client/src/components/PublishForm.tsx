@@ -1,15 +1,22 @@
-import { useContext } from "react";
 import AnimationWrapper from "../common/page-animation";
-import { EditorContext } from "../pages/editor.pages";
 import Tag from "./Tag";
 import toast from "react-hot-toast";
+import useEditorContext from "../hooks/useEditorContext";
+import { http } from "../http";
+import useUserContext from "../hooks/useUserContext";
+import { useNavigate } from "react-router-dom";
+import { blogStructure } from "../context/EditorContext";
+import { AxiosError } from "axios";
+import { handleApiError } from "../utils/handleApiError";
 
 const PublishForm = () => {
   const characterLimit = 200;
   const tagLimit = 10;
-  const { setEditorState, blog, setBlog } = useContext(EditorContext);
+  const navigate = useNavigate();
+  const { setEditorState, blog, setBlog } = useEditorContext();
+  const { userAuth } = useUserContext();
 
-  const { banner, title, tags, des } = blog;
+  const { banner, title, tags, des, content } = blog;
 
   const handleCloseEvent = () => {
     setEditorState("editor");
@@ -66,12 +73,76 @@ const PublishForm = () => {
     }
   };
 
-  const handlePublish = (
+  const handlePublish = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
-    console.log("Publish");
+
+    const button = event.currentTarget as HTMLButtonElement;
+
+    if (button.className.includes("disabled")) {
+      return;
+    }
+
+    if (!title.length) {
+      return toast.error("Write blog title before publishing");
+    }
+
+    if (!des.length || des.length > characterLimit) {
+      return toast.error(
+        `Write a description about your blog within ${characterLimit} characters to publish`
+      );
+    }
+
+    if (!tags.length) {
+      return toast.error("Enter at least 1 tag to help us rank you blog");
+    }
+
+    const loadingToast = toast.loading("Publishing....");
+
+    button.classList.add("disabled");
+
+    const blogObj = {
+      title,
+      banner,
+      des,
+      content,
+      tags,
+      draft: false,
+    };
+
+    try {
+      await http.post("/blogs/create-blog", blogObj, {
+        headers: {
+          Authorization: `Bearer ${userAuth?.access_token}`,
+        },
+      });
+
+      button.classList.remove("disabled");
+      toast.dismiss(loadingToast);
+      toast.success("Published 👍");
+      setBlog(blogStructure);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      console.log(error);
+      button.classList.remove("disabled");
+      toast.dismiss(loadingToast);
+
+      let message;
+
+      if (error instanceof AxiosError) {
+        message = handleApiError(error);
+      } else {
+        message = "An unexpected error occurred.";
+      }
+      toast.error(message);
+    }
   };
+
+
   return (
     <AnimationWrapper>
       <section className="w-screen min-h-screen GRID items-center lg:grid-cols-2 py-16 lg:gap-4">

@@ -25,7 +25,7 @@ const UserAuthForm = ({ type }: { type: string }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (userAuth.access_token) {
+    if (userAuth && userAuth.access_token) {
       navigate("/");
     }
   }, [userAuth, navigate]);

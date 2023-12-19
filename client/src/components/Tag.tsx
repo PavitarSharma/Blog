@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
-import { EditorContext } from "../pages/editor.pages";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from "react";
+import useEditorContext from "../hooks/useEditorContext";
 
 const Tag = ({ tag, tagIndex }: { tag: string; tagIndex: number }) => {
-  const { blog, setBlog } = useContext(EditorContext);
-  const { tags } = blog;
+  const {
+    blog,
+    blog: { tags },
+    setBlog,
+  } = useEditorContext();
 
   const handleDelete = () => {
     const deleteTags = tags.filter((t: string) => t !== tag);
@@ -14,22 +18,35 @@ const Tag = ({ tag, tagIndex }: { tag: string; tagIndex: number }) => {
     });
   };
 
+  const isStringArray = (value: any): value is string[] => {
+    return (
+      Array.isArray(value) && value.every((item) => typeof item === "string")
+    );
+  };
+
   const handleTagEdit = (event: React.KeyboardEvent<HTMLParagraphElement>) => {
-    if (event.key === "Enter" || event.key === ",") {
-      event.preventDefault();
+    if (isStringArray(tags)) {
+      const currentTags = tags.slice();
 
-      const currentTag = (event.target as HTMLParagraphElement).textContent;
+      if (event.key === "Enter" || event.key === ",") {
+        event.preventDefault();
 
-      tags[tagIndex] = currentTag;
+        const currentTag = (event.target as HTMLParagraphElement).textContent;
 
-      setBlog({
-        ...blog,
-        tags,
-      });
-      (event.target as HTMLParagraphElement).setAttribute(
-        "contentEditable",
-        "false"
-      );
+        if (currentTag !== null) {
+          currentTags[tagIndex] = currentTag;
+
+          setBlog({
+            ...blog,
+            tags: currentTags,
+          });
+
+          (event.target as HTMLParagraphElement).setAttribute(
+            "contentEditable",
+            "false"
+          );
+        }
+      }
     }
   };
 

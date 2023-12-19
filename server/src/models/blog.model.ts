@@ -1,4 +1,5 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
+import { IUser } from "./user.model";
 
 export interface IActivity extends Document {
   total_likes: number;
@@ -7,19 +8,26 @@ export interface IActivity extends Document {
   total_parent_comments: number;
 }
 export interface IBlog extends Document {
+  blog_id: string;
   title: string;
   banner: string;
   des: string;
   content: { type: any[] };
   activity: IActivity;
   tags: [string];
-  author: any;
+  author: Types.ObjectId | IUser;
   comments: [any];
   draft: boolean;
 }
 
 const blogSchema = new Schema<IBlog>(
   {
+    blog_id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     title: {
       type: String,
       required: true,

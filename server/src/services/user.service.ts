@@ -51,6 +51,16 @@ class UserService {
   async findUser(id: string): Promise<IUser | null> {
     return await User.findById(id);
   }
+
+  async addUserPost(id: any, blogId: string, total_posts: number) {
+    return await User.findOneAndUpdate(
+      { _id: id },
+      {
+        $inc: { "account_info.total_posts": total_posts },
+        $push: { blogs: blogId },
+      }
+    );
+  }
 }
 
 export const userService = new UserService();

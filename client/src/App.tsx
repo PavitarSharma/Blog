@@ -6,12 +6,20 @@ import UserContextProvider from "./context/UserContext";
 import { Toaster } from "react-hot-toast";
 import Editor from "./pages/editor.pages";
 import HomeLayout from "./layout/HomeLayout";
+import { EditorContextProvider } from "./context/EditorContext";
 
 const App = () => {
   return (
     <UserContextProvider>
       <Routes>
-        <Route path="/editor" element={<Editor />} />
+        <Route
+          path="/editor"
+          element={
+            <EditorContextProvider>
+              <Editor />
+            </EditorContextProvider>
+          }
+        />
         <Route path="/" element={<HomeLayout />}>
           <Route path="signin" element={<UserAuthForm type="sign-in" />} />
           <Route path="signup" element={<UserAuthForm type="sign-up" />} />
