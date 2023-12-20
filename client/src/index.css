@@ -71,13 +71,15 @@ input:disabled ~ .input-icon {
   @apply text-dark-grey hover:text-black hover:bg-grey p-3 px-4 block opacity-75;
 }
 
+.show {
+  @apply opacity-100 pointer-events-auto;
+}
+
 .hide {
   @apply opacity-0 pointer-events-none duration-100;
 }
 
-.show {
-  @apply opacity-100 pointer-events-auto;
-}
+
 
 .sidebar-link {
   @apply flex gap-4 items-center py-5 text-dark-grey hover:text-black;

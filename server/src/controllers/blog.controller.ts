@@ -84,6 +84,16 @@ class BlogController {
 
     res.status(201).json({ id: blog.blog_id });
   }
+
+  async latestBlogs(req: Request, res: Response, next: NextFunction) {
+    const blogs = await blogService.latestBlogs();
+    res.status(200).json({ blogs });
+  }
+
+  async trendingBlogs(req: Request, res: Response, next: NextFunction) {
+    const blogs = await blogService.trendingBlogs();
+    res.status(200).json({ blogs });
+  }
 }
 
 export const blogController = new BlogController();
