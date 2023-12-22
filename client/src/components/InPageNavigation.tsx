@@ -1,37 +1,61 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 
-type InPageNavigationProp = {
+type InPageNavigationProps = {
   routes: string[];
   defaultActiveIndex?: number;
   defaultHidden?: string[];
   children: ReactNode;
 };
 
-const InPageNavigation = ({
-  routes,
-  defaultActiveIndex = 0,
-  defaultHidden = [],
-  children,
-}: InPageNavigationProp) => {
+export interface InPageNavigationRef {
+  triggerButtonClick: () => void;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+const InPageNavigation = (
+  props: InPageNavigationProps,
+  ref: React.Ref<InPageNavigationRef>
+) => {
+  const {
+    routes,
+    defaultActiveIndex = 0,
+    defaultHidden = [],
+    children,
+  } = props;
+
   const [inPageNavIndex, setInPageNavIndex] = useState(defaultActiveIndex);
   const activeTabLineRef = useRef<HTMLHRElement | null>(null);
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
 
-  const changePageState = (btn: HTMLButtonElement, i: number) => {
+  const changePageState = useCallback((btn: HTMLButtonElement, i: number) => {
     const { offsetWidth, offsetLeft } = btn;
 
     activeTabLineRef.current!.style.width = offsetWidth + "px";
     activeTabLineRef.current!.style.left = offsetLeft + "px";
 
     setInPageNavIndex(i);
-  };
+  }, []);
 
-  useEffect(() => {
-    changePageState(
-      activeTabRef.current as HTMLButtonElement,
-      defaultActiveIndex
-    );
-  }, [defaultActiveIndex]);
+  const triggerButtonClick = useCallback(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.click();
+    }
+  }, [activeTabRef]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      triggerButtonClick,
+    }),
+    [triggerButtonClick]
+  );
 
   return (
     <>
@@ -60,4 +84,5 @@ const InPageNavigation = ({
   );
 };
 
-export default InPageNavigation;
+// eslint-disable-next-line react-refresh/only-export-components
+export default forwardRef(InPageNavigation);

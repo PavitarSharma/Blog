@@ -5,7 +5,7 @@ type AnimationWrapperProp = {
   children: React.ReactNode;
   initial?: { opacity: number };
   animate?: { opacity: number };
-  transition?: { duration: number; delay: number };
+  transition?: { duration: number; delay?: number };
   keyValue?: string;
   className?: string;
 };

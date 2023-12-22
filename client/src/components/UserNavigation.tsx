@@ -4,12 +4,12 @@ import useUserContext from "../hooks/useUserContext";
 import { removeFromSession } from "../common/session";
 
 const UserNavigation = () => {
-  const { userAuth, setAuth } = useUserContext();
+  const { userAuth, setUserAuth } = useUserContext();
 
   const signOut = () => {
     removeFromSession("user");
-    setAuth({ access_token: null });
-    
+    setUserAuth({ access_token: null });
+    window.location.reload();
   };
   return (
     <AnimationWrapper

@@ -86,13 +86,39 @@ class BlogController {
   }
 
   async latestBlogs(req: Request, res: Response, next: NextFunction) {
-    const blogs = await blogService.latestBlogs();
-    res.status(200).json({ blogs });
+    const page = Number(req.query.page);
+    const { tag, query } = req.query;
+
+    const blogs = await blogService.latestBlogs(
+      page,
+      tag as string,
+      query as string
+    );
+    res.status(200).json(blogs);
+  }
+
+  async allLatestBlogsCount(req: Request, res: Response) {
+    const count = await blogService.allLatestBlogsCount();
+    res.status(200).json({ totalDocs: count });
   }
 
   async trendingBlogs(req: Request, res: Response, next: NextFunction) {
     const blogs = await blogService.trendingBlogs();
     res.status(200).json({ blogs });
+  }
+
+  async searchBlogs(req: Request, res: Response, next: NextFunction) {
+    const { tag } = req.body;
+    const blogs = await blogService.searchBlogs(tag);
+
+    res.status(200).json({ blogs });
+  }
+
+  async searchBlogsCount(req: Request, res: Response) {
+    const tag = req.params.tag;
+
+    const count = await blogService.searchBlogsCount(tag);
+    res.status(200).json({ totalDocs: count });
   }
 }
 
