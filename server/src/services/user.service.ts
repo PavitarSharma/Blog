@@ -48,8 +48,10 @@ class UserService {
     return await User.create(newData);
   }
 
-  async findUser(id: string): Promise<IUser | null> {
-    return await User.findById(id);
+  async findUser(username: string) {
+    return await User.findOne({ username: username }).select(
+      "-google_auth -blogs  -updatedAt"
+    );
   }
 
   async addUserPost(id: any, blogId: string, total_posts: number) {
@@ -60,6 +62,12 @@ class UserService {
         $push: { blogs: blogId },
       }
     );
+  }
+
+  async searchUsers(query: string) {
+    return await User.find({ username: new RegExp(query, "i") })
+      .limit(50)
+      .select("fullname username profile_img -_id");
   }
 }
 

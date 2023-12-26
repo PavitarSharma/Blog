@@ -10,19 +10,15 @@ import MinimalBlogPost from "../components/MinimalBlogPost";
 import NoDataMessage from "../components/Nodata";
 import { fetcher } from "../utils/fetcher";
 import useSWR from "swr";
-import useBlogContext from "../hooks/useBlogContext";
-import useDebounce from "../hooks/useDebounce";
 import LoadMoreDataBtn from "../components/LoadMoreDataBtn";
 
 const Home = () => {
   const [page, setPage] = useState(1);
-  const { searchTerm } = useBlogContext();
-  const debounceSearch = useDebounce(searchTerm);
   const [pageState, setPageState] = useState("home");
   const { data: blogs = [], isLoading: loadingBlogs } = useSWR(
     `/blogs/latest-blogs?page=${page}&tag=${
       pageState !== "home" ? pageState : ""
-    }&query=${debounceSearch}`,
+    }`,
     fetcher
   );
 

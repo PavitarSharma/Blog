@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useUserContext from "../hooks/useUserContext";
 import UserNavigation from "./UserNavigation";
 import useBlogContext from "../hooks/useBlogContext";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [searchBoxVisibility, setSearchBoxVisibility] = useState(true);
   const [userNavPanel, setUserNavPanel] = useState(false);
   const { userAuth } = useUserContext();
@@ -18,6 +19,14 @@ const Navbar = () => {
     setTimeout(() => {
       setUserNavPanel(false);
     }, 200);
+  };
+
+  const handleSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const query = event.currentTarget.value;
+
+    if (event.key === "Enter" && query.length) {
+      navigate(`/search/${searchTerm}`);
+    }
   };
 
   return (
@@ -38,6 +47,7 @@ const Navbar = () => {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             setSearchTerm(event.target.value)
           }
+          onKeyDown={handleSearch}
           className="w-full md:w-auto bg-grey p-4 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-dark-grey md:pl-12"
         />
         <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>

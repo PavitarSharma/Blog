@@ -40,6 +40,6 @@ export const isAuthenticated = async (
   }
 
   req.user = decoded.id;
-
   next();
+  
 };

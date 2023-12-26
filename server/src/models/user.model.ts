@@ -143,7 +143,7 @@ const userSchema = new Schema<IUser>(
     },
     blogs: {
       type: [Schema.Types.ObjectId],
-      ref: "blogs",
+      ref: "Blog",
       default: [],
     },
   },

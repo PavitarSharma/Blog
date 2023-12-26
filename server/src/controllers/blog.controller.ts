@@ -87,12 +87,13 @@ class BlogController {
 
   async latestBlogs(req: Request, res: Response, next: NextFunction) {
     const page = Number(req.query.page);
-    const { tag, query } = req.query;
+    const { tag, query, autherId } = req.query;
 
     const blogs = await blogService.latestBlogs(
       page,
       tag as string,
-      query as string
+      query as string,
+      autherId as string
     );
     res.status(200).json(blogs);
   }
@@ -114,12 +115,9 @@ class BlogController {
     res.status(200).json({ blogs });
   }
 
-  async searchBlogsCount(req: Request, res: Response) {
-    const tag = req.params.tag;
+  
 
-    const count = await blogService.searchBlogsCount(tag);
-    res.status(200).json({ totalDocs: count });
-  }
+ 
 }
 
 export const blogController = new BlogController();

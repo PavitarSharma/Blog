@@ -12,7 +12,12 @@ class BlogService {
     return await Blog.create(data);
   }
 
-  async latestBlogs(page: number, tag: string, query: string) {
+  async latestBlogs(
+    page: number,
+    tag: string,
+    query: string,
+    autherId: string
+  ) {
     let findQuery: any = {};
 
     if (query) {
@@ -26,9 +31,10 @@ class BlogService {
       findQuery.draft = { $in: [true, false] };
     }
 
-    
 
-
+    if (autherId) {
+      findQuery.author = autherId;
+    }
 
     return await Blog.find(findQuery)
       .populate("author", "fullname username profile_img -_id")

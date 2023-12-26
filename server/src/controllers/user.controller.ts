@@ -64,7 +64,7 @@ class UserController {
       .verifyIdToken(accessToken)
       .then(async (decodedUser) => {
         console.log(decodedUser);
-        
+
         let { email, name, picture } = decodedUser;
         picture = picture?.replace("s96-c", "s384-c");
 
@@ -137,7 +137,8 @@ class UserController {
   async signOut(req: Request, res: Response, next: NextFunction) {}
 
   async profile(req: Request, res: Response, next: NextFunction) {
-    const user = await userService.findUser("");
+    const user = await userService.findUser(req.params.username);
+
     res.status(200).json(user);
   }
 
@@ -147,6 +148,13 @@ class UserController {
   }
 
   async updateProfile(req: Request, res: Response, next: NextFunction) {}
+
+  async searchUsers(req: Request, res: Response, next: NextFunction) {
+    const { query } = req.query;
+    const users = await userService.searchUsers(query as string);
+
+    res.status(200).json(users);
+  }
 }
 
 const userController = new UserController();

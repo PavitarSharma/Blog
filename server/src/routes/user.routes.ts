@@ -8,8 +8,10 @@ router.post("/google-auth", userController.googleAuth);
 router.post("/forgot-password", userController.forgotPassword);
 router.patch("/reset-password", userController.resetPassword);
 
+router.get("/search-users", userController.searchUsers);
+
+router.get("/profile/:username", userController.profile);
 // Authorized Routes - Need Authentication
-router.get("/profile", userController.profile);
 router.patch("/update-password", userController.updatePassword);
 router.put("/profile", userController.updateProfile);
 router.post("/signout", userController.signOut);
