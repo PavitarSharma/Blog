@@ -11,6 +11,7 @@ import BlogContextProvider from "./context/BlogContext";
 import SearchPage from "./pages/search.page";
 import PageNotFound from "./pages/404.page";
 import UserProfilePage from "./pages/profile.page";
+import BlogPage from "./pages/blog.page";
 
 const App = () => {
   return (
@@ -25,12 +26,21 @@ const App = () => {
               </EditorContextProvider>
             }
           />
+          <Route
+            path="/editor/:blog_id"
+            element={
+              <EditorContextProvider>
+              <Editor />
+              </EditorContextProvider>
+            }
+          />
           <Route path="/" element={<HomeLayout />}>
             <Route path="signin" element={<UserAuthForm type="sign-in" />} />
             <Route path="signup" element={<UserAuthForm type="sign-up" />} />
             <Route index element={<Home />} />
             <Route path="search/:query" element={<SearchPage />} />
             <Route path="user/:id" element={<UserProfilePage />} />
+            <Route path="blog/:blog_id" element={<BlogPage />} />
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>

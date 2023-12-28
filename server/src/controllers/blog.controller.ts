@@ -4,6 +4,7 @@ import { IBlogBody, ICreateBlogInputs } from "../dto";
 import createHttpError from "http-errors";
 import { blogService, userService } from "../services";
 import { v4 as uuidv4 } from "uuid";
+import { Blog, User } from "../models";
 
 class BlogController {
   async generateUploadURL(req: Request, res: Response) {
@@ -14,7 +15,7 @@ class BlogController {
   async createBlog(req: Request, res: Response, next: NextFunction) {
     const authorId = req.user;
 
-    let { title, banner, content, tags, des, draft } = <ICreateBlogInputs>(
+    let { title, banner, content, tags, des, draft, id } = <ICreateBlogInputs>(
       req.body
     );
 
@@ -59,6 +60,7 @@ class BlogController {
     tags = tags.map((tag) => tag.toLowerCase());
 
     const blogId =
+      id ||
       title
         .replace(/[^a-zA-z+-9]/g, " ")
         .replace(/\s+/g, "-")
@@ -76,24 +78,30 @@ class BlogController {
       author: authorId,
     };
 
-    const blog = await blogService.createBlog(blogData);
+    if (id) {
+      const blog = await blogService.updateBlog(blogData);
+      res.status(200).json({ id: blog?.blog_id });
+    } else {
+      const blog = await blogService.createBlog(blogData);
 
-    const incrementVal = draft ? 0 : 1;
+      const incrementVal = draft ? 0 : 1;
 
-    await userService.addUserPost(authorId, blog._id, incrementVal);
+      await userService.addUserPost(authorId, blog._id, incrementVal);
 
-    res.status(201).json({ id: blog.blog_id });
+      res.status(201).json({ id: blog.blog_id });
+    }
   }
 
   async latestBlogs(req: Request, res: Response, next: NextFunction) {
-    const page = Number(req.query.page);
-    const { tag, query, autherId } = req.query;
+    const page = Number(req.query.page) || 1;
+    const { tag, query, autherId, eliminate_blog } = req.query;
 
     const blogs = await blogService.latestBlogs(
       page,
       tag as string,
       query as string,
-      autherId as string
+      autherId as string,
+      eliminate_blog as string
     );
     res.status(200).json(blogs);
   }
@@ -115,9 +123,16 @@ class BlogController {
     res.status(200).json({ blogs });
   }
 
-  
+  async getBlog(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { blog_id, draft, mode } = req.body;
+      const blog = await blogService.getBlog(blog_id, mode, draft);
 
- 
+      res.status(200).json(blog);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 export const blogController = new BlogController();

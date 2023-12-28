@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/latest-blogs", blogController.latestBlogs);
 router.get("/trending-blogs", blogController.trendingBlogs);
 router.get("/all-latest-blogs-count", blogController.allLatestBlogsCount);
+router.post("/get-blog", blogController.getBlog);
 router.post("/search-blogs", blogController.searchBlogs);
 router.post(
   "/get-upload-url",

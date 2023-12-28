@@ -5,6 +5,7 @@ export interface ICreateBlogInputs {
   tags: string[];
   des: string;
   draft: boolean;
+  id?: string
 }
 
 export interface IBlogBody {

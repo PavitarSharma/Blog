@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
 import React, { useEffect } from "react";
 import { uploadImage } from "../common/aws";
@@ -13,6 +13,7 @@ import useUserContext from "../hooks/useUserContext";
 import { http } from "../http";
 
 const BlogEditor = () => {
+  const { blog_id } = useParams();
   const navigate = useNavigate();
   const { userAuth } = useUserContext();
   const {
@@ -132,9 +133,8 @@ const BlogEditor = () => {
 
     button.classList.add("disabled");
 
-
     if (textEditor) {
-      await textEditor.isReady; 
+      await textEditor.isReady;
       const savedData: OutputData = await textEditor.save();
       const blogObj = {
         title,
@@ -144,18 +144,22 @@ const BlogEditor = () => {
         tags,
         draft: true,
       };
-  
+
       try {
-        await http.post("/blogs/create-blog", blogObj, {
-          headers: {
-            Authorization: `Bearer ${userAuth?.access_token}`,
-          },
-        });
-  
+        await http.post(
+          "/blogs/create-blog",
+          { ...blogObj, id: blog_id },
+          {
+            headers: {
+              Authorization: `Bearer ${userAuth?.access_token}`,
+            },
+          }
+        );
+
         button.classList.remove("disabled");
         toast.dismiss(loadingToast);
         toast.success("Saved 👍");
-  
+
         setTimeout(() => {
           navigate("/");
         }, 500);
@@ -163,9 +167,9 @@ const BlogEditor = () => {
         console.log(error);
         button.classList.remove("disabled");
         toast.dismiss(loadingToast);
-  
+
         let message;
-  
+
         if (error instanceof AxiosError) {
           message = handleApiError(error);
         } else {
@@ -174,8 +178,6 @@ const BlogEditor = () => {
         toast.error(message);
       }
     }
-
-    
   };
 
   return (

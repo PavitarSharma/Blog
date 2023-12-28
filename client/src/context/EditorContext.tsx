@@ -26,8 +26,6 @@ export interface IBlog {
   author: any;
 }
 
-
-
 export interface IEditorContext {
   blog: IBlog;
   setBlog: Dispatch<SetStateAction<IBlog>>;

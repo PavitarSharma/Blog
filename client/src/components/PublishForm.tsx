@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import useEditorContext from "../hooks/useEditorContext";
 import { http } from "../http";
 import useUserContext from "../hooks/useUserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { blogStructure } from "../context/EditorContext";
 import { AxiosError } from "axios";
 import { handleApiError } from "../utils/handleApiError";
@@ -12,6 +12,7 @@ import { handleApiError } from "../utils/handleApiError";
 const PublishForm = () => {
   const characterLimit = 200;
   const tagLimit = 10;
+  const { blog_id } = useParams();
   const navigate = useNavigate();
   const { setEditorState, blog, setBlog } = useEditorContext();
   const { userAuth } = useUserContext();
@@ -112,11 +113,15 @@ const PublishForm = () => {
     };
 
     try {
-      await http.post("/blogs/create-blog", blogObj, {
-        headers: {
-          Authorization: `Bearer ${userAuth?.access_token}`,
-        },
-      });
+      await http.post(
+        "/blogs/create-blog",
+        { ...blogObj, id: blog_id },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth?.access_token}`,
+          },
+        }
+      );
 
       button.classList.remove("disabled");
       toast.dismiss(loadingToast);
@@ -141,7 +146,6 @@ const PublishForm = () => {
       toast.error(message);
     }
   };
-
 
   return (
     <AnimationWrapper>
